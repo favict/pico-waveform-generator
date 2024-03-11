@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+.venv/
+env/
+*.env
+
+# IDE
+.vscode/
+.idea/
+
+# Dependency directories
+libs/
+library/
+libraries/
+
+# Build files
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dll
+*.exe
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Micropico
+.micropico
