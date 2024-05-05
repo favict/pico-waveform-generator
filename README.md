@@ -1,5 +1,7 @@
 # Arbitrary Waveform Generator for Raspberry Pi Pico
 
+![AWG1](https://github.com/favict/pico-waveform-generator/assets/45994341/214f8207-6e9a-46ef-97db-b80b4f082a4b)
+
 ## Introduction
 
 This project implements a menu control to [Rolf Oldeman's AWG design](https://www.instructables.com/Arbitrary-Wave-Generator-With-the-Raspberry-Pi-Pic/).
