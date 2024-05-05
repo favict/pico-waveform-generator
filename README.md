@@ -1,6 +1,6 @@
 # Arbitrary Waveform Generator for Raspberry Pi Pico
 
-![AWG1](https://github.com/favict/pico-waveform-generator/assets/45994341/214f8207-6e9a-46ef-97db-b80b4f082a4b)
+![AWG3](https://github.com/favict/pico-waveform-generator/assets/45994341/4bb95f53-b20d-49c1-be59-70a8377965b7)
 
 ## Introduction
 
