@@ -1,18 +1,29 @@
+import gc
+import utime
+from machine import freq
+
 from control.button import switch_power_supply_to_pwm
+from control.control import Control, ControlType
+from display.display import DisplayLCD
 from generation.constants import SYSTEM_FREQUENCY
 from generation.generation import WaveformGenerator
 from utils.helpers import menu_state_tracker
-import utime
-import gc
-from machine import freq
-from control.control import Control
 
 
 def main():
-    control = Control(display_on=True, buttons_on=True)
+    lcd_display = DisplayLCD(
+        i2c_bus=1,
+        sda_pin=26,
+        scl_pin=27,
+        i2c_frequency=400000,
+        i2c_address=0x3F,
+        line_count=2,
+        column_count=16,
+    )
+    control = Control(lcd_display, ControlType.BUTTONS)
     control.update_display()
-    wave = control.menu.current_waveform
 
+    wave = control.menu.current_waveform
     generator = WaveformGenerator()
     generator.start(wave)
 

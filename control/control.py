@@ -3,9 +3,11 @@ from generation.constants import WaveformEntries
 from generation.waveforms import WAVEFORMS, WaveformParams
 from utils.helpers import get_params_values_string
 
-from display.display import Display
 from control.button import ButtonControl
 
+class ControlType:
+    NONE = 0
+    BUTTONS = 1
 
 class Page:
     def __init__(self, name, setting):
@@ -51,12 +53,19 @@ class Menu:
 
 
 class Control:
-    def __init__(self, display_on=False, buttons_on=False):
-        self.display_on = display_on
-        self.buttons_on = buttons_on
-        self.display, self.main_button, self.increase_button, self.decrease_button = (
-            self.setup_control_hardware(display_on, buttons_on)
-        )
+    def __init__(self, display=None, control_type=ControlType.NONE):
+
+        self.display = display
+
+        if control_type == ControlType.BUTTONS:
+            self.main_button = ButtonControl(pin=19)
+            self.increase_button = ButtonControl(pin=18)
+            self.decrease_button = ButtonControl(pin=20)
+        else:
+            self.main_button = None
+            self.increase_button = None
+            self.decrease_button = None
+
         self.main_page = Page("Main", setting=None)
         self.waveform_page = Page(
             "Waveform",
@@ -67,8 +76,6 @@ class Control:
             ),
         )
         self.menu = self.setup_menu()
-        self.check_buttons = self.check_buttons
-        self.update_display = self.update_display
 
     def update_display(self):
         if not self.display:
@@ -89,7 +96,7 @@ class Control:
         return
 
     def check_buttons(self):
-        if self.buttons_on:
+        if self.main_button:
             default_value = (False, 0)
             main_pressed, _ = (
                 self.main_button.check_pressed() if self.main_button else default_value
@@ -130,30 +137,6 @@ class Control:
                 )
                 self.update_display()
                 return
-
-    def setup_control_hardware(self, display_on, buttons_on):
-        display = None
-        main_button = None
-        increase_button = None
-        decrease_button = None
-
-        if buttons_on:
-            main_button = ButtonControl(pin=19)
-            increase_button = ButtonControl(pin=18)
-            decrease_button = ButtonControl(pin=20)
-
-        if display_on:
-            display = Display(
-                i2c_bus=1,
-                sda_pin=26,
-                scl_pin=27,
-                i2c_frequency=400000,
-                i2c_address=0x3F,
-                line_count=2,
-                column_count=16,
-            )
-
-        return display, main_button, increase_button, decrease_button
 
     def setup_menu(self):
         default_pages = [self.main_page, self.waveform_page]
