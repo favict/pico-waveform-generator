@@ -1,5 +1,6 @@
 from machine import I2C, Pin
 from display.lcd_driver import I2cLcd
+from display.ssd1306 import SSD1306_I2C
 
 class DisplayLCD:
     def __init__(
@@ -35,3 +36,14 @@ class DisplayLCD:
             self.lcd.backlight_on()
         else:
             self.lcd.backlight_off()
+
+class DisplayOLED:
+    def __init__(self, width, height, i2c_bus, sda_pin, scl_pin):
+        i2c = I2C(i2c_bus, sda=Pin(sda_pin), scl=Pin(scl_pin))
+        self.oled = SSD1306_I2C(width, height, i2c)
+
+    def render(self, lines):
+        self.oled.fill(0)
+        for i, line in enumerate(lines):
+            self.oled.text(line, 0, i * 11)
+        self.oled.show()

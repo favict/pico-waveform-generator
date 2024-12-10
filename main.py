@@ -4,7 +4,7 @@ from machine import freq
 
 from control.button import switch_power_supply_to_pwm
 from control.control import Control, ControlType
-from display.display import DisplayLCD
+from display.display import DisplayLCD, DisplayOLED
 from generation.constants import SYSTEM_FREQUENCY
 from generation.generation import WaveformGenerator
 from utils.helpers import menu_state_tracker
@@ -20,6 +20,7 @@ def main():
         line_count=2,
         column_count=16,
     )
+    # oled_display = DisplayOLED(128, 32, i2c_bus=1, sda_pin=26, scl_pin=27)
     control = Control(lcd_display, ControlType.BUTTONS)
     control.update_display()
 
