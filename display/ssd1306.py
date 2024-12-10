@@ -3,6 +3,8 @@
 # Copyright (c) 2018 Stefan Lehmann
 # https://github.com/stlehmann/micropython-ssd1306
 #
+# Modified by Daniel Wagner to support 180 degree rotation
+#
 # Licensed under the MIT License
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -49,9 +51,10 @@ SET_CHARGE_PUMP = const(0x8D)
 # Subclassing FrameBuffer provides support for graphics primitives
 # http://docs.micropython.org/en/latest/pyboard/library/framebuf.html
 class SSD1306(framebuf.FrameBuffer):
-    def __init__(self, width, height, external_vcc):
+    def __init__(self, width, height, rotate_180, external_vcc):
         self.width = width
         self.height = height
+        self.rotate_180 = rotate_180
         self.external_vcc = external_vcc
         self.pages = self.height // 8
         self.buffer = bytearray(self.pages * self.width)
@@ -59,6 +62,12 @@ class SSD1306(framebuf.FrameBuffer):
         self.init_display()
 
     def init_display(self):
+        seg_remap = SET_SEG_REMAP | 0x01  # column addr 127 mapped to SEG0
+        scan_dir = SET_COM_OUT_DIR | 0x08  # scan from COM[N] to COM0
+        if self.rotate_180:
+            seg_remap = SET_SEG_REMAP | 0x00
+            scan_dir = SET_COM_OUT_DIR | 0x00
+
         for cmd in (
             SET_DISP | 0x00,  # off
             # address setting
@@ -66,10 +75,10 @@ class SSD1306(framebuf.FrameBuffer):
             0x00,  # horizontal
             # resolution and layout
             SET_DISP_START_LINE | 0x00,
-            SET_SEG_REMAP | 0x01,  # column addr 127 mapped to SEG0
+            seg_remap,
             SET_MUX_RATIO,
             self.height - 1,
-            SET_COM_OUT_DIR | 0x08,  # scan from COM[N] to COM0
+            scan_dir,
             SET_DISP_OFFSET,
             0x00,
             SET_COM_PIN_CFG,
@@ -125,12 +134,12 @@ class SSD1306(framebuf.FrameBuffer):
 
 
 class SSD1306_I2C(SSD1306):
-    def __init__(self, width, height, i2c, addr=0x3C, external_vcc=False):
+    def __init__(self, width, height, rotate_180, i2c, addr=0x3C, external_vcc=False):
         self.i2c = i2c
         self.addr = addr
         self.temp = bytearray(2)
         self.write_list = [b"\x40", None]  # Co=0, D/C#=1
-        super().__init__(width, height, external_vcc)
+        super().__init__(width, height, rotate_180, external_vcc)
 
     def write_cmd(self, cmd):
         self.temp[0] = 0x80  # Co=1, D/C#=0
@@ -143,7 +152,7 @@ class SSD1306_I2C(SSD1306):
 
 
 class SSD1306_SPI(SSD1306):
-    def __init__(self, width, height, spi, dc, res, cs, external_vcc=False):
+    def __init__(self, width, height, rotate_180, spi, dc, res, cs, external_vcc=False):
         self.rate = 10 * 1024 * 1024
         dc.init(dc.OUT, value=0)
         res.init(res.OUT, value=0)
@@ -159,7 +168,7 @@ class SSD1306_SPI(SSD1306):
         self.res(0)
         time.sleep_ms(10)
         self.res(1)
-        super().__init__(width, height, external_vcc)
+        super().__init__(width, height, rotate_180, external_vcc)
 
     def write_cmd(self, cmd):
         self.spi.init(baudrate=self.rate, polarity=0, phase=0)

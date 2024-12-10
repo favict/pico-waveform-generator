@@ -20,7 +20,14 @@ def main():
         line_count=2,
         column_count=16,
     )
-    # oled_display = DisplayOLED(128, 32, i2c_bus=1, sda_pin=26, scl_pin=27)
+    # oled_display = DisplayOLED(
+    #     width=128,
+    #     height=32,
+    #     rotate_180=True,
+    #     i2c_bus=0,
+    #     sda_pin=8,
+    #     scl_pin=9,
+    # )
     control = Control(lcd_display, ControlType.BUTTONS)
     control.update_display()
 
