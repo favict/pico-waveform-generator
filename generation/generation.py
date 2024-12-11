@@ -13,8 +13,6 @@ from array import array
 from math import floor
 from uctypes import addressof
 
-system_clock = freq()  # clock frequency of the pico
-
 DMA_BASE = 0x50000000
 CH0_READ_ADDR = DMA_BASE + 0x000
 CH0_WRITE_ADDR = DMA_BASE + 0x004
@@ -164,7 +162,7 @@ def start_waveform_generation(buffer, waveform_type, parameters, max_sample_coun
         ParamNames.FREQUENCY, WaveformParams.FREQUENCY.min
     )
     # Determine clock division to accommodate the waveform frequency within the buffer capacity
-    clock_division_factor = system_clock / (target_frequency * max_sample_count)
+    clock_division_factor = freq() / (target_frequency * max_sample_count)
 
     if clock_division_factor < 1.0:
         # If the clock cannot be sped up, increase the number of waveform cycles in the buffer
@@ -238,7 +236,7 @@ class WaveformGenerator:
         self.buffer = {}
         self.buffer[0] = bytearray(self.maxnsamp)
         self.buffer[1] = bytearray(self.maxnsamp)
-        self.state_machine = StateMachine(0, stream, freq=system_clock, out_base=Pin(0))
+        self.state_machine = StateMachine(0, stream, out_base=Pin(0))
         self.state_machine.active(1)
 
     def _switch_buffer(self):
