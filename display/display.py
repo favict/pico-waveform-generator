@@ -1,8 +1,7 @@
-from display.lcd_driver import I2cLcd
 from machine import I2C, Pin
+from display.lcd_driver import I2cLcd
 
-
-class Display:
+class DisplayLCD:
     def __init__(
         self,
         i2c_bus,
